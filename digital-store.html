@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ديجي ستور — منتجات رقمية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════
+       TOKEN SYSTEM
+       ─────────────────────────────────────────
+       bg-deep   : #0B0F1A   (base canvas)
+       bg-card   : #131929   (card / panel)
+       bg-hover  : #1B2236   (hover state)
+       accent    : #4F8EF7   (electric blue – primary CTA)
+       accent2   : #A259FF   (violet – category badges)
+       accent3   : #00D4AA   (teal – success / sale)
+       text-hi   : #F0F4FF   (headings)
+       text-lo   : #7A8BA6   (body, captions)
+       border    : #1E2D45   (dividers)
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:   #0B0F1A;
+      --bg-card:   #131929;
+      --bg-hover:  #1B2236;
+      --accent:    #4F8EF7;
+      --accent2:   #A259FF;
+      --accent3:   #00D4AA;
+      --text-hi:   #F0F4FF;
+      --text-lo:   #7A8BA6;
+      --border:    #1E2D45;
+      --radius:    14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-hi);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 68px;
+      background: rgba(11,15,26,.85);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo span { font-family: 'IBM Plex Mono', monospace; font-size: .95em; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--text-lo); text-decoration: none; font-size: .92rem; font-weight: 600;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text-hi); }
+    .nav-actions { display: flex; gap: .75rem; align-items: center; }
+    .btn-ghost {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-hi); padding: .45rem 1.1rem;
+      border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif;
+      font-size: .88rem; font-weight: 600; transition: border-color .2s, background .2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); background: rgba(79,142,247,.08); }
+    .btn-accent {
+      background: var(--accent); color: #fff; border: none;
+      padding: .48rem 1.2rem; border-radius: 8px; cursor: pointer;
+      font-family: 'Cairo', sans-serif; font-size: .88rem; font-weight: 700;
+      transition: opacity .2s;
+    }
+    .btn-accent:hover { opacity: .88; }
+    .cart-icon { position: relative; cursor: pointer; }
+    .cart-badge {
+      position: absolute; top: -6px; right: -8px;
+      background: var(--accent2); color: #fff;
+      font-size: .62rem; font-weight: 700; border-radius: 50%;
+      width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: 100px 5vw 80px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -120px; left: 60%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,142,247,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(79,142,247,.1); border: 1px solid rgba(79,142,247,.3);
+      color: var(--accent); font-size: .78rem; font-weight: 700;
+      padding: .3rem .9rem; border-radius: 50px; margin-bottom: 1.4rem;
+      letter-spacing: .04em;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 900; line-height: 1.15;
+      color: var(--text-hi); margin-bottom: 1rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p {
+      font-size: 1.05rem; color: var(--text-lo); line-height: 1.75;
+      max-width: 480px; margin-bottom: 2rem;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #3a6ed4);
+      color: #fff; border: none; padding: .75rem 2rem;
+      border-radius: 10px; cursor: pointer; font-family: 'Cairo', sans-serif;
+      font-size: 1rem; font-weight: 700; transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(79,142,247,.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,142,247,.45); }
+    .btn-outline {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-hi); padding: .75rem 1.8rem;
+      border-radius: 10px; cursor: pointer; font-family: 'Cairo', sans-serif;
+      font-size: 1rem; font-weight: 600; transition: border-color .2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); }
+
+    /* hero stats */
+    .hero-stats {
+      display: flex; gap: 2.5rem; margin-top: 3rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .stat-val { font-size: 1.7rem; font-weight: 900; color: var(--text-hi); }
+    .stat-lbl { font-size: .78rem; color: var(--text-lo); font-weight: 600; margin-top: .1rem; }
+
+    /* hero visual */
+    .hero-visual {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .9rem;
+      animation: floatIn .8s ease both;
+    }
+    @keyframes floatIn { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:none} }
+    .mini-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.1rem; cursor: default;
+      transition: transform .25s, border-color .25s;
+    }
+    .mini-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .mini-card.span2 { grid-column: 1/-1; }
+    .mini-card-icon { font-size: 2rem; margin-bottom: .6rem; }
+    .mini-card-title { font-size: .85rem; font-weight: 700; color: var(--text-hi); }
+    .mini-card-price {
+      font-size: .78rem; font-weight: 700; color: var(--accent3);
+      font-family: 'IBM Plex Mono', monospace; margin-top: .3rem;
+    }
+    .mini-card-tag {
+      display: inline-block; font-size: .65rem; font-weight: 700;
+      padding: .15rem .55rem; border-radius: 4px; margin-top: .4rem;
+      background: rgba(162,89,255,.2); color: var(--accent2);
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 80px 5vw; }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-eyebrow {
+      font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: .5rem;
+    }
+    .section-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; }
+    .section-sub { font-size: .95rem; color: var(--text-lo); margin-top: .4rem; }
+
+    /* ── CATEGORIES ── */
+    .categories { background: var(--bg-card); }
+    .cats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    .cat-pill {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      padding: 1.4rem 1rem; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--bg-deep);
+      cursor: pointer; transition: border-color .2s, transform .2s;
+      text-align: center;
+    }
+    .cat-pill:hover { border-color: var(--accent2); transform: translateY(-3px); }
+    .cat-pill.active { border-color: var(--accent); background: rgba(79,142,247,.08); }
+    .cat-emoji { font-size: 1.8rem; }
+    .cat-name { font-size: .82rem; font-weight: 700; color: var(--text-hi); }
+    .cat-count { font-size: .72rem; color: var(--text-lo); }
+
+    /* ── PRODUCTS ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+    }
+    .prod-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      display: flex; flex-direction: column;
+    }
+    .prod-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(79,142,247,.4);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .prod-thumb {
+      height: 160px; display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; position: relative;
+    }
+    .prod-badge {
+      position: absolute; top: .75rem; right: .75rem;
+      font-size: .65rem; font-weight: 700; padding: .2rem .6rem; border-radius: 5px;
+    }
+    .badge-new { background: rgba(0,212,170,.2); color: var(--accent3); }
+    .badge-sale { background: rgba(255,80,80,.2); color: #ff6b6b; }
+    .badge-hot { background: rgba(255,165,0,.2); color: #ffa500; }
+    .prod-body { padding: 1.1rem; flex: 1; display: flex; flex-direction: column; gap: .4rem; }
+    .prod-category {
+      font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+      color: var(--accent2); text-transform: uppercase;
+    }
+    .prod-name { font-size: .95rem; font-weight: 700; color: var(--text-hi); line-height: 1.35; }
+    .prod-desc { font-size: .78rem; color: var(--text-lo); line-height: 1.55; flex: 1; }
+    .prod-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--border);
+    }
+    .prod-price { font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--accent3); font-size: 1.05rem; }
+    .prod-price-old {
+      font-family: 'IBM Plex Mono', monospace; font-size: .78rem;
+      color: var(--text-lo); text-decoration: line-through; margin-right: .3rem;
+    }
+    .prod-rating { font-size: .75rem; color: #ffd700; }
+    .prod-reviews { font-size: .7rem; color: var(--text-lo); margin-right: .2rem; }
+    .prod-footer { padding: .85rem 1.1rem; border-top: 1px solid var(--border); }
+    .btn-buy {
+      width: 100%; padding: .65rem; border-radius: 8px;
+      background: rgba(79,142,247,.12); border: 1px solid rgba(79,142,247,.3);
+      color: var(--accent); font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .88rem;
+      cursor: pointer; transition: background .2s, border-color .2s;
+    }
+    .btn-buy:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── FEATURES ── */
+    .features { background: var(--bg-card); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;
+    }
+    .feat-card {
+      padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-deep);
+    }
+    .feat-icon { font-size: 1.8rem; margin-bottom: .8rem; }
+    .feat-title { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
+    .feat-desc { font-size: .8rem; color: var(--text-lo); line-height: 1.6; }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+    .step {
+      text-align: center; padding: 2rem 1rem;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-card); position: relative;
+    }
+    .step-num {
+      font-family: 'IBM Plex Mono', monospace; font-size: 2.5rem; font-weight: 700;
+      color: rgba(79,142,247,.2); line-height: 1;
+    }
+    .step-icon { font-size: 2rem; margin: .5rem 0; }
+    .step-title { font-size: .9rem; font-weight: 700; }
+    .step-desc { font-size: .78rem; color: var(--text-lo); margin-top: .3rem; line-height: 1.55; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { background: var(--bg-card); }
+    .testi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .testi-card {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.4rem;
+    }
+    .testi-stars { color: #ffd700; font-size: .85rem; margin-bottom: .7rem; }
+    .testi-text { font-size: .85rem; color: var(--text-lo); line-height: 1.7; margin-bottom: 1rem; }
+    .testi-user { display: flex; align-items: center; gap: .7rem; }
+    .testi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .testi-name { font-size: .83rem; font-weight: 700; }
+    .testi-role { font-size: .72rem; color: var(--text-lo); }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      margin: 0 5vw 60px; border-radius: 20px;
+      background: linear-gradient(135deg, rgba(79,142,247,.15), rgba(162,89,255,.15));
+      border: 1px solid rgba(79,142,247,.25);
+      padding: 3.5rem 4rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-banner::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(162,89,255,.1) 0%, transparent 70%);
+    }
+    .cta-banner h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 900; margin-bottom: .6rem; }
+    .cta-banner p { color: var(--text-lo); margin-bottom: 1.8rem; font-size: .95rem; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── NEWSLETTER ── */
+    .newsletter { padding: 60px 5vw; background: var(--bg-card); }
+    .newsletter-inner {
+      max-width: 520px; margin: 0 auto; text-align: center;
+    }
+    .newsletter h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: .5rem; }
+    .newsletter p { font-size: .88rem; color: var(--text-lo); margin-bottom: 1.2rem; }
+    .nl-form { display: flex; gap: .5rem; }
+    .nl-form input {
+      flex: 1; background: var(--bg-deep); border: 1px solid var(--border);
+      color: var(--text-hi); border-radius: 9px; padding: .7rem 1rem;
+      font-family: 'Cairo', sans-serif; font-size: .9rem; outline: none;
+      transition: border-color .2s;
+    }
+    .nl-form input::placeholder { color: var(--text-lo); }
+    .nl-form input:focus { border-color: var(--accent); }
+    .nl-form button {
+      background: var(--accent); color: #fff; border: none;
+      padding: .7rem 1.4rem; border-radius: 9px; cursor: pointer;
+      font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .9rem;
+      white-space: nowrap; transition: opacity .2s;
+    }
+    .nl-form button:hover { opacity: .85; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg-deep); border-top: 1px solid var(--border);
+      padding: 3rem 5vw 1.5rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem;
+    }
+    .footer-brand p { font-size: .82rem; color: var(--text-lo); line-height: 1.65; margin-top: .7rem; max-width: 240px; }
+    .footer-col h4 { font-size: .85rem; font-weight: 700; margin-bottom: .9rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .footer-col a { font-size: .8rem; color: var(--text-lo); text-decoration: none; transition: color .2s; }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 1.2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .75rem; color: var(--text-lo);
+    }
+    .social-links { display: flex; gap: .6rem; }
+    .social-btn {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid var(--border); background: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: .85rem; color: var(--text-lo);
+      transition: border-color .2s, color .2s;
+    }
+    .social-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CART PANEL ── */
+    .cart-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 200; opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .cart-overlay.open { opacity: 1; pointer-events: all; }
+    .cart-panel {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 360px; max-width: 92vw;
+      background: var(--bg-card); border-left: 1px solid var(--border);
+      z-index: 201; transform: translateX(-100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+    }
+    .cart-panel.open { transform: none; }
+    .cart-panel-head {
+      padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cart-panel-head h3 { font-size: 1rem; font-weight: 700; }
+    .close-btn {
+      background: none; border: none; color: var(--text-lo); font-size: 1.4rem;
+      cursor: pointer; line-height: 1; padding: 0;
+    }
+    .close-btn:hover { color: var(--text-hi); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.4rem; display: flex; flex-direction: column; gap: .8rem; }
+    .cart-item {
+      display: flex; gap: .8rem; align-items: center;
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 10px; padding: .8rem;
+    }
+    .cart-item-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: .83rem; font-weight: 700; }
+    .cart-item-price { font-size: .78rem; color: var(--accent3); font-family: 'IBM Plex Mono', monospace; margin-top: .15rem; }
+    .cart-item-remove { background: none; border: none; color: var(--text-lo); cursor: pointer; font-size: 1rem; padding: 0; }
+    .cart-item-remove:hover { color: #ff6b6b; }
+    .cart-empty { text-align: center; color: var(--text-lo); font-size: .88rem; padding: 3rem 1rem; }
+    .cart-footer { padding: 1.2rem 1.4rem; border-top: 1px solid var(--border); }
+    .cart-total {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem; font-weight: 700;
+    }
+    .cart-total-val { font-family: 'IBM Plex Mono', monospace; color: var(--accent3); font-size: 1.15rem; }
+    .btn-checkout {
+      width: 100%; padding: .75rem; background: linear-gradient(135deg, var(--accent), #3a6ed4);
+      color: #fff; border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Cairo', sans-serif; font-weight: 700; font-size: .95rem;
+      transition: opacity .2s;
+    }
+    .btn-checkout:hover { opacity: .88; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--bg-hover); border: 1px solid var(--accent3);
+      color: var(--text-hi); padding: .7rem 1.4rem; border-radius: 10px;
+      font-size: .88rem; font-weight: 600; z-index: 300;
+      opacity: 0; transition: transform .35s ease, opacity .35s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+      display: flex; align-items: center; gap: .5rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 50px; padding: .4rem .4rem .4rem 1rem;
+      max-width: 340px; flex: 1;
+    }
+    .search-bar input {
+      background: none; border: none; outline: none;
+      color: var(--text-hi); font-family: 'Cairo', sans-serif;
+      font-size: .88rem; flex: 1; min-width: 0;
+    }
+    .search-bar input::placeholder { color: var(--text-lo); }
+    .search-bar button {
+      background: var(--accent); border: none; color: #fff;
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: .85rem;
+      flex-shrink: 0;
+    }
+
+    /* responsive */
+    @media(max-width:860px){
+      .hero { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+    @media(max-width:520px){
+      .footer-grid { grid-template-columns: 1fr; }
+      .nl-form { flex-direction: column; }
+      .hero-stats { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav>
+  <div class="logo"><span>//</span> ديجي ستور</div>
+  <ul class="nav-links">
+    <li><a href="#products">المنتجات</a></li>
+    <li><a href="#categories">التصنيفات</a></li>
+    <li><a href="#how">كيف يعمل</a></li>
+    <li><a href="#about">عن المتجر</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="search-bar">
+      <input type="text" placeholder="ابحث عن منتج..." id="searchInput" oninput="filterProducts()" />
+      <button>🔍</button>
+    </div>
+    <div class="cart-icon" onclick="openCart()">
+      🛒
+      <div class="cart-badge" id="cartBadge">0</div>
+    </div>
+    <button class="btn-ghost">تسجيل الدخول</button>
+    <button class="btn-accent">إنشاء حساب</button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-eyebrow">✦ أكثر من 500 منتج رقمي</div>
+    <h1>منتجاتك الرقمية<br /><em>بلحظة واحدة</em></h1>
+    <p>اكتشف مجموعة ضخمة من القوالب، الدورات، السوفت وير، والأصول الإبداعية. تحميل فوري بعد الدفع.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">تصفح المنتجات ←</button>
+      <button class="btn-outline">شاهد الفيديو التعريفي ▶</button>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-val">+4,200</div>
+        <div class="stat-lbl">عميل راضٍ</div>
+      </div>
+      <div>
+        <div class="stat-val">+500</div>
+        <div class="stat-lbl">منتج رقمي</div>
+      </div>
+      <div>
+        <div class="stat-val">4.9⭐</div>
+        <div class="stat-lbl">متوسط التقييم</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="mini-card">
+      <div class="mini-card-icon">🎨</div>
+      <div class="mini-card-title">حزمة UI كاملة</div>
+      <div class="mini-card-price">$29</div>
+      <span class="mini-card-tag">قوالب</span>
+    </div>
+    <div class="mini-card">
+      <div class="mini-card-icon">🤖</div>
+      <div class="mini-card-title">بوت تيليغرام</div>
+      <div class="mini-card-price">$49</div>
+      <span class="mini-card-tag">كود</span>
+    </div>
+    <div class="mini-card span2">
+      <div class="mini-card-icon">🎓</div>
+      <div class="mini-card-title">دورة بايثون من الصفر للاحتراف</div>
+      <div class="mini-card-price">$19 <span style="color:var(--text-lo);text-decoration:line-through;font-size:.8em">$45</span></div>
+      <span class="mini-card-tag">دورات</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CATEGORIES ══ -->
+<section class="categories" id="categories">
+  <div class="section-header">
+    <div class="section-eyebrow">التصنيفات</div>
+    <div class="section-title">تسوق حسب الفئة</div>
+    <div class="section-sub">اختر تصنيفاً لتصفية المنتجات</div>
+  </div>
+  <div class="cats-grid" id="catsGrid">
+    <div class="cat-pill active" onclick="setCategory('الكل')">
+      <div class="cat-emoji">🌐</div>
+      <div class="cat-name">الكل</div>
+      <div class="cat-count">24 منتج</div>
+    </div>
+    <div class="cat-pill" onclick="setCategory('قوالب')">
+      <div class="cat-emoji">🎨</div>
+      <div class="cat-name">قوالب</div>
+      <div class="cat-count">6 منتجات</div>
+    </div>
+    <div class="cat-pill" onclick="setCategory('دورات')">
+      <div class="cat-emoji">🎓</div>
+      <div class="cat-name">دورات</div>
+      <div class="cat-count">5 منتجات</div>
+    </div>
+    <div class="cat-pill" onclick="setCategory('كود')">
+      <div class="cat-emoji">💻</div>
+      <div class="cat-name">سكريبتات وكود</div>
+      <div class="cat-count">5 منتجات</div>
+    </div>
+    <div class="cat-pill" onclick="setCategory('تصميم')">
+      <div class="cat-emoji">🖼️</div>
+      <div class="cat-name">أصول تصميم</div>
+      <div class="cat-count">4 منتجات</div>
+    </div>
+    <div class="cat-pill" onclick="setCategory('كتب')">
+      <div class="cat-emoji">📚</div>
+      <div class="cat-name">كتب وإيبوك</div>
+      <div class="cat-count">4 منتجات</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRODUCTS ══ -->
+<section id="products" style="padding-top:60px">
+  <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+    <div>
+      <div class="section-eyebrow">المنتجات</div>
+      <div class="section-title">أحدث الإضافات</div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="sortBtns">
+      <button class="btn-ghost" style="font-size:.78rem;padding:.35rem .9rem" onclick="sortProducts('featured')">الأبرز</button>
+      <button class="btn-ghost" style="font-size:.78rem;padding:.35rem .9rem" onclick="sortProducts('price-low')">الأقل سعراً</button>
+      <button class="btn-ghost" style="font-size:.78rem;padding:.35rem .9rem" onclick="sortProducts('price-high')">الأعلى سعراً</button>
+      <button class="btn-ghost" style="font-size:.78rem;padding:.35rem .9rem" onclick="sortProducts('rating')">الأعلى تقييماً</button>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="features" id="about">
+  <div class="section-header">
+    <div class="section-eyebrow">لماذا ديجي ستور</div>
+    <div class="section-title">مميزات تجعلنا الخيار الأول</div>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">تحميل فوري</div>
+      <div class="feat-desc">بعد إتمام الدفع مباشرةً، يصل رابط التحميل لبريدك وتجده في حسابك.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">دفع آمن 100٪</div>
+      <div class="feat-desc">نستخدم بروتوكولات تشفير SSL ومعالجات دفع معتمدة دولياً.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔄</div>
+      <div class="feat-title">ضمان استرداد 7 أيام</div>
+      <div class="feat-desc">غير راضٍ؟ استرد أموالك خلال 7 أيام بدون أسئلة.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📦</div>
+      <div class="feat-title">تحديثات مجانية</div>
+      <div class="feat-desc">جميع المنتجات تأتي مع تحديثات مجانية مدى الحياة.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">دعم 24/7</div>
+      <div class="feat-desc">فريقنا متاح على مدار الساعة للإجابة على استفساراتك.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌍</div>
+      <div class="feat-title">وصول من أي مكان</div>
+      <div class="feat-desc">احفظ منتجاتك وحمّلها من أي جهاز في أي وقت.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section id="how">
+  <div class="section-header">
+    <div class="section-eyebrow">خطوات بسيطة</div>
+    <div class="section-title">كيف يعمل المتجر؟</div>
+    <div class="section-sub">من التصفح إلى التحميل في دقائق</div>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon">🔍</div>
+      <div class="step-title">اختر المنتج</div>
+      <div class="step-desc">تصفح المتجر وأضف ما تريد إلى سلة التسوق</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon">💳</div>
+      <div class="step-title">أتم الدفع</div>
+      <div class="step-desc">ادفع بأمان عبر بطاقة ائتمانية أو PayPal أو محافظ رقمية</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon">📧</div>
+      <div class="step-title">استلم رابط التحميل</div>
+      <div class="step-desc">يصلك الرابط فوراً على بريدك وفي لوحة التحكم</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-icon">🚀</div>
+      <div class="step-title">ابدأ الاستخدام</div>
+      <div class="step-desc">افتح ملفاتك وابدأ مشروعك الآن دون انتظار</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section class="testimonials">
+  <div class="section-header">
+    <div class="section-eyebrow">آراء العملاء</div>
+    <div class="section-title">ماذا يقول عملاؤنا؟</div>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">اشتريت قالب Notion لإدارة المشاريع وغيّر حياتي تماماً. جودة عالية وسعر معقول جداً.</div>
+      <div class="testi-user">
+        <div class="testi-avatar">أ</div>
+        <div>
+          <div class="testi-name">أحمد الشمري</div>
+          <div class="testi-role">مطور ويب — الرياض</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">الدورة التعليمية كانت شاملة ومنظمة. وصلني رابط التحميل خلال ثوانٍ من إتمام الدفع.</div>
+      <div class="testi-user">
+        <div class="testi-avatar">س</div>
+        <div>
+          <div class="testi-name">سارة المنصوري</div>
+          <div class="testi-role">طالبة هندسة — دبي</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★☆</div>
+      <div class="testi-text">اشتريت حزمة أيقونات رائعة وأضافت لمسة احترافية لمشاريعي. سأعود للشراء مجدداً.</div>
+      <div class="testi-user">
+        <div class="testi-avatar">م</div>
+        <div>
+          <div class="testi-name">محمد الزهراني</div>
+          <div class="testi-role">مصمم جرافيك — القاهرة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA BANNER ══ -->
+<div class="cta-banner">
+  <h2>هل أنت مبدع؟ بِع منتجاتك معنا</h2>
+  <p>انضم لمئات البائعين وابدأ تحقيق دخل سلبي من منتجاتك الرقمية</p>
+  <div class="cta-actions">
+    <button class="btn-primary">ابدأ البيع مجاناً ←</button>
+    <button class="btn-outline">تعرف على الشروط</button>
+  </div>
+</div>
+
+<!-- ══ NEWSLETTER ══ -->
+<section class="newsletter">
+  <div class="newsletter-inner">
+    <h3>اشترك في النشرة البريدية</h3>
+    <p>احصل على خصم 15% على أول طلب، واطّلع على أحدث المنتجات والعروض.</p>
+    <div class="nl-form">
+      <input type="email" placeholder="بريدك الإلكتروني..." />
+      <button onclick="showToast('تم الاشتراك! راجع بريدك الإلكتروني ✅')">اشترك</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo" style="font-size:1.3rem"><span>//</span> ديجي ستور</div>
+      <p>أكبر سوق للمنتجات الرقمية في العالم العربي. جودة، أمان، وتحميل فوري.</p>
+    </div>
+    <div class="footer-col">
+      <h4>المتجر</h4>
+      <ul>
+        <li><a href="#">المنتجات</a></li>
+        <li><a href="#">التصنيفات</a></li>
+        <li><a href="#">العروض</a></li>
+        <li><a href="#">الجديد</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>الدعم</h4>
+      <ul>
+        <li><a href="#">مركز المساعدة</a></li>
+        <li><a href="#">سياسة الاسترداد</a></li>
+        <li><a href="#">تواصل معنا</a></li>
+        <li><a href="#">الأسئلة الشائعة</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>الشركة</h4>
+      <ul>
+        <li><a href="#">عن المتجر</a></li>
+        <li><a href="#">سياسة الخصوصية</a></li>
+        <li><a href="#">الشروط والأحكام</a></li>
+        <li><a href="#">البيع معنا</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 ديجي ستور — جميع الحقوق محفوظة</span>
+    <div class="social-links">
+      <button class="social-btn">𝕏</button>
+      <button class="social-btn">in</button>
+      <button class="social-btn">▶</button>
+      <button class="social-btn">📸</button>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ CART PANEL ══ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-panel-head">
+    <h3>🛒 سلة التسوق</h3>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>الإجمالي</span>
+      <span class="cart-total-val" id="cartTotal">$0</span>
+    </div>
+    <button class="btn-checkout" onclick="checkout()">إتمام الشراء ←</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ─── DATA ─── */
+  const allProducts = [
+    { id:1,  name:'حزمة قوالب Notion شاملة', cat:'قوالب',  icon:'📋', price:19,  oldPrice:35, rating:4.9, reviews:128, badge:'sale',     bg:'#1a2235', desc:'أكثر من 20 قالب لإدارة المشاريع، الأهداف، والوقت.' },
+    { id:2,  name:'دورة Python من الصفر',     cat:'دورات',  icon:'🐍', price:29,  oldPrice:null, rating:4.8, reviews:94, badge:'hot',  bg:'#1a2535', desc:'أكثر من 40 درس فيديو مع مشاريع تطبيقية.' },
+    { id:3,  name:'بوت تيليغرام بالذكاء الاصطناعي', cat:'كود', icon:'🤖', price:49, oldPrice:70, rating:4.7, reviews:56, badge:'new', bg:'#1b2035', desc:'بوت GPT-4 جاهز للتشغيل مع لوحة تحكم.' },
+    { id:4,  name:'حزمة أيقونات 3D (1000 أيقونة)', cat:'تصميم', icon:'🎨', price:12, oldPrice:null, rating:4.6, reviews:200, badge:'hot', bg:'#1a1f35', desc:'1000 أيقونة ثلاثية الأبعاد بصيغ PNG وSVG.' },
+    { id:5,  name:'دليل ريادة الأعمال الرقمية',    cat:'كتب',   icon:'📚', price:9,  oldPrice:18, rating:4.5, reviews:312, badge:'sale', bg:'#1f1a35', desc:'200 صفحة من الاستراتيجيات المجربة لبناء نشاط رقمي.' },
+    { id:6,  name:'قالب موقع Portfolio',      cat:'قوالب',  icon:'💼', price:24, oldPrice:null, rating:4.9, reviews:77, badge:'new', bg:'#1a2030', desc:'قالب HTML/CSS/JS احترافي جاهز للنشر.' },
+    { id:7,  name:'سكريبت محل إلكتروني',     cat:'كود',    icon:'🛒', price:59, oldPrice:90, rating:4.8, reviews:42, badge:'sale', bg:'#1a2535', desc:'سكريبت PHP + MySQL كامل مع لوحة إدارة.' },
+    { id:8,  name:'دورة تصميم UI/UX',         cat:'دورات',  icon:'🎓', price:35, oldPrice:55, rating:4.7, reviews:88, badge:'hot', bg:'#201a35', desc:'من التفكير التصميمي إلى النماذج الأولية في Figma.' },
+    { id:9,  name:'مكتبة صور بريميوم (500 صورة)', cat:'تصميم', icon:'🖼️', price:8, oldPrice:null, rating:4.4, reviews:150, badge:'new', bg:'#1a2035', desc:'500 صورة بدقة عالية مع ترخيص تجاري.' },
+    { id:10, name:'كتاب تعلم الذكاء الاصطناعي', cat:'كتب',   icon:'🧠', price:14, oldPrice:22, rating:4.8, reviews:190, badge:'sale', bg:'#1f1a35', desc:'مرجع شامل لمفاهيم ML و Deep Learning.' },
+    { id:11, name:'قالب Figma لتطبيق موبايل',  cat:'قوالب', icon:'📱', price:22, oldPrice:null, rating:4.6, reviews:65, badge:'new', bg:'#1a2235', desc:'أكثر من 80 شاشة لتطبيق iOS/Android.' },
+    { id:12, name:'سكريبت بوت واتساب',        cat:'كود',    icon:'💬', price:39, oldPrice:60, rating:4.5, reviews:33, badge:'hot', bg:'#1b2030', desc:'أتمتة واتساب مع دعم الرسائل الجماعية.' },
+  ];
+
+  let cart = [];
+  let currentCat = 'الكل';
+  let currentSort = 'featured';
+
+  /* ─── RENDER ─── */
+  function renderProducts() {
+    let list = [...allProducts];
+    if (currentCat !== 'الكل') list = list.filter(p => p.cat === currentCat);
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (q) list = list.filter(p => p.name.includes(q) || p.desc.includes(q));
+    if (currentSort === 'price-low')  list.sort((a,b) => a.price - b.price);
+    if (currentSort === 'price-high') list.sort((a,b) => b.price - a.price);
+    if (currentSort === 'rating')     list.sort((a,b) => b.rating - a.rating);
+
+    const g = document.getElementById('productsGrid');
+    if (!list.length) { g.innerHTML = '<p style="color:var(--text-lo);padding:2rem">لا توجد منتجات مطابقة.</p>'; return; }
+    g.innerHTML = list.map(p => `
+      <div class="prod-card" style="--thumb-bg:${p.bg}">
+        <div class="prod-thumb" style="background:${p.bg}">
+          ${p.icon}
+          ${p.badge ? `<span class="prod-badge badge-${p.badge}">${p.badge==='new'?'جديد':p.badge==='sale'?'خصم':'🔥 رائج'}</span>` : ''}
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">${p.cat}</div>
+          <div class="prod-name">${p.name}</div>
+          <div class="prod-desc">${p.desc}</div>
+          <div class="prod-meta">
+            <div>
+              ${p.oldPrice ? `<span class="prod-price-old">$${p.oldPrice}</span>` : ''}
+              <span class="prod-price">$${p.price}</span>
+            </div>
+            <div style="text-align:left">
+              <div class="prod-rating">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
+              <div class="prod-reviews">(${p.reviews})</div>
+            </div>
+          </div>
+        </div>
+        <div class="prod-footer">
+          <button class="btn-buy" onclick="addToCart(${p.id})">أضف للسلة 🛒</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function setCategory(cat) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-pill').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    renderProducts();
+  }
+
+  function sortProducts(s) { currentSort = s; renderProducts(); }
+  function filterProducts() { renderProducts(); }
+
+  /* ─── CART ─── */
+  function addToCart(id) {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    if (cart.find(x => x.id === id)) { showToast('المنتج موجود في السلة بالفعل'); return; }
+    cart.push(p);
+    updateCart();
+    showToast(`✅ تمت إضافة "${p.name}" للسلة`);
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    updateCart();
+  }
+
+  function updateCart() {
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = cart.length;
+    badge.style.background = cart.length ? 'var(--accent2)' : 'transparent';
+
+    const items = document.getElementById('cartItems');
+    const footer = document.getElementById('cartFooter');
+    if (!cart.length) {
+      items.innerHTML = '<div class="cart-empty">🛒<br/>سلتك فارغة<br/>ابدأ التسوق!</div>';
+      footer.style.display = 'none';
+      return;
+    }
+    items.innerHTML = cart.map(p => `
+      <div class="cart-item">
+        <div class="cart-item-icon">${p.icon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.name}</div>
+          <div class="cart-item-price">$${p.price}</div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${p.id})">✕</button>
+      </div>`).join('');
+    const total = cart.reduce((s,p) => s + p.price, 0);
+    document.getElementById('cartTotal').textContent = `$${total}`;
+    footer.style.display = 'block';
+  }
+
+  function openCart() {
+    document.getElementById('cartOverlay').classList.add('open');
+    document.getElementById('cartPanel').classList.add('open');
+  }
+  function closeCart() {
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.getElementById('cartPanel').classList.remove('open');
+  }
+  function checkout() {
+    showToast('🎉 شكراً لك! سيصل رابط التحميل لبريدك قريباً.');
+    cart = [];
+    updateCart();
+    closeCart();
+  }
+
+  /* ─── TOAST ─── */
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ─── INIT ─── */
+  renderProducts();
+  updateCart();
+</script>
+</body>
+</html>
