@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://js.stripe.com/v3/"></script>
   <style>
     /* ═══════════════════════════════════════════
        TOKEN SYSTEM
@@ -458,12 +459,124 @@
       flex-shrink: 0;
     }
 
+    /* ── CONTACT SECTION ── */
+    .contact-section { background: var(--bg-card); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+      max-width: 1000px; margin: 0 auto;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+    .contact-item {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem;
+      transition: border-color .2s;
+    }
+    .contact-item:hover { border-color: var(--accent); }
+    .contact-icon { font-size: 1.5rem; }
+    .contact-text h4 { font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
+    .contact-text p { font-size: .82rem; color: var(--text-lo); }
+    .contact-form {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .contact-form h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+    .form-group { display: flex; flex-direction: column; gap: .3rem; }
+    .form-group label { font-size: .82rem; font-weight: 600; color: var(--text-lo); }
+    .form-group input, .form-group textarea, .form-group select {
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-hi); border-radius: 8px; padding: .65rem .9rem;
+      font-family: 'Cairo', sans-serif; font-size: .88rem; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-lo); }
+
+    /* ── REVIEWS MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      z-index: 400; opacity: 0; pointer-events: none; transition: opacity .3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); width: 90%; max-width: 520px;
+      max-height: 85vh; overflow-y: auto;
+      transform: scale(.9); transition: transform .3s;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-head {
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-head h3 { font-size: 1.05rem; font-weight: 700; }
+    .modal-body { padding: 1.5rem; }
+    .review-item {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; margin-bottom: .8rem;
+    }
+    .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem; }
+    .review-author { font-size: .85rem; font-weight: 700; }
+    .review-date { font-size: .72rem; color: var(--text-lo); }
+    .review-stars { color: #ffd700; font-size: .85rem; margin-bottom: .4rem; }
+    .review-text { font-size: .82rem; color: var(--text-lo); line-height: 1.6; }
+    .review-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .star-rating-input { display: flex; gap: .3rem; margin-bottom: .8rem; direction: ltr; justify-content: flex-end; }
+    .star-rating-input .star {
+      font-size: 1.5rem; color: #333; cursor: pointer; transition: color .2s;
+    }
+    .star-rating-input .star.active { color: #ffd700; }
+    .star-rating-input .star:hover { color: #ffd700; }
+
+    /* ── PAYMENT MODAL ── */
+    .payment-modal .modal { max-width: 480px; }
+    .payment-form { display: flex; flex-direction: column; gap: 1rem; }
+    .payment-summary {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; margin-bottom: 1rem;
+    }
+    .payment-summary h4 { font-size: .85rem; font-weight: 700; margin-bottom: .5rem; }
+    .payment-item { display: flex; justify-content: space-between; font-size: .82rem; color: var(--text-lo); padding: .2rem 0; }
+    .payment-total { display: flex; justify-content: space-between; font-weight: 700; margin-top: .5rem; padding-top: .5rem; border-top: 1px solid var(--border); }
+    .payment-total span:last-child { color: var(--accent3); font-family: 'IBM Plex Mono', monospace; }
+    .stripe-element {
+      background: var(--bg-deep); border: 1px solid var(--border);
+      border-radius: 8px; padding: .8rem;
+    }
+    .payment-error { color: #ff6b6b; font-size: .8rem; margin-top: .5rem; display: none; }
+    .payment-success { color: var(--accent3); font-size: .85rem; text-align: center; padding: 2rem; display: none; }
+    .payment-success-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3); border-radius: 50%;
+      border-top-color: #fff; animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── PRODUCT REVIEWS ON CARD ── */
+    .prod-reviews-summary {
+      display: flex; align-items: center; gap: .4rem;
+      margin-top: .3rem;
+    }
+    .prod-reviews-summary .stars { color: #ffd700; font-size: .72rem; }
+    .prod-reviews-summary .count { font-size: .7rem; color: var(--text-lo); }
+    .btn-review {
+      background: none; border: none; color: var(--accent); font-size: .75rem;
+      cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;
+      margin-top: .3rem; padding: 0; text-decoration: underline;
+    }
+    .btn-review:hover { opacity: .8; }
+
     /* responsive */
     @media(max-width:860px){
       .hero { grid-template-columns: 1fr; }
       .hero-visual { display: none; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .nav-links { display: none; }
+      .contact-grid { grid-template-columns: 1fr; }
     }
     @media(max-width:520px){
       .footer-grid { grid-template-columns: 1fr; }
@@ -482,6 +595,7 @@
     <li><a href="#categories">التصنيفات</a></li>
     <li><a href="#how">كيف يعمل</a></li>
     <li><a href="#about">عن المتجر</a></li>
+    <li><a href="#contact">تواصل</a></li>
   </ul>
   <div class="nav-actions">
     <div class="search-bar">
@@ -677,6 +791,73 @@
   </div>
 </section>
 
+<!-- ══ CONTACT SECTION ══ -->
+<section class="contact-section" id="contact">
+  <div class="section-header" style="text-align:center">
+    <div class="section-eyebrow">تواصل معنا</div>
+    <div class="section-title">نحن هنا لمساعدتك</div>
+    <div class="section-sub">لديك سؤال أو استفسار؟ تواصل معنا الآن</div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div class="contact-text">
+          <h4>البريد الإلكتروني</h4>
+          <p>support@digistore.com</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📱</div>
+        <div class="contact-text">
+          <h4>واتساب</h4>
+          <p>+966 50 123 4567</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">💬</div>
+        <div class="contact-text">
+          <h4>الدردشة المباشرة</h4>
+          <p>متاحة 24/7 على الموقع</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div class="contact-text">
+          <h4>الموقع</h4>
+          <p>الرياض، المملكة العربية السعودية</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <h3>أرسل رسالة</h3>
+      <div class="form-group">
+        <label>الاسم الكامل</label>
+        <input type="text" id="contactName" placeholder="أدخل اسمك" />
+      </div>
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="contactEmail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>نوع الرسالة</label>
+        <select id="contactType">
+          <option value="">اختر...</option>
+          <option value="support">دعم فني</option>
+          <option value="sales">مبيعات</option>
+          <option value="partnership">شراكة</option>
+          <option value="other">أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>الرسالة</label>
+        <textarea id="contactMessage" placeholder="اكتب رسالتك هنا..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="sendContact()" style="width:100%">إرسال الرسالة →</button>
+    </div>
+  </div>
+</section>
+
 <!-- ══ TESTIMONIALS ══ -->
 <section class="testimonials">
   <div class="section-header">
@@ -761,9 +942,9 @@
     <div class="footer-col">
       <h4>الدعم</h4>
       <ul>
-        <li><a href="#">مركز المساعدة</a></li>
+        <li><a href="#contact">مركز المساعدة</a></li>
         <li><a href="#">سياسة الاسترداد</a></li>
-        <li><a href="#">تواصل معنا</a></li>
+        <li><a href="#contact">تواصل معنا</a></li>
         <li><a href="#">الأسئلة الشائعة</a></li>
       </ul>
     </div>
@@ -801,7 +982,88 @@
       <span>الإجمالي</span>
       <span class="cart-total-val" id="cartTotal">$0</span>
     </div>
-    <button class="btn-checkout" onclick="checkout()">إتمام الشراء ←</button>
+    <button class="btn-checkout" onclick="openPayment()">إتمام الشراء ←</button>
+  </div>
+</div>
+
+<!-- ══ REVIEWS MODAL ══ -->
+<div class="modal-overlay" id="reviewsModal" onclick="closeReviewsModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="reviewsModalTitle">التقييمات</h3>
+      <button class="close-btn" onclick="closeReviewsModal()">✕</button>
+    </div>
+    <div class="modal-body" id="reviewsModalBody">
+      <div id="reviewsList"></div>
+      <div class="review-form">
+        <h4 style="font-size:.9rem;font-weight:700;margin-bottom:.5rem">أضف تقييمك</h4>
+        <div class="star-rating-input" id="starRatingInput">
+          <span class="star" data-val="1">★</span>
+          <span class="star" data-val="2">★</span>
+          <span class="star" data-val="3">★</span>
+          <span class="star" data-val="4">★</span>
+          <span class="star" data-val="5">★</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="reviewerName" placeholder="اسمك" />
+        </div>
+        <div class="form-group">
+          <textarea id="reviewText" placeholder="اكتب تقييمك..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="submitReview()" style="width:100%">إرسال التقييم</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAYMENT MODAL ══ -->
+<div class="modal-overlay payment-modal" id="paymentModal" onclick="closePaymentModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3>💳 إتمام الدفع</h3>
+      <button class="close-btn" onclick="closePaymentModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="paymentForm">
+        <div class="payment-summary">
+          <h4>ملخص الطلب</h4>
+          <div id="paymentItems"></div>
+          <div class="payment-total">
+            <span>الإجمالي</span>
+            <span id="paymentTotal">$0</span>
+          </div>
+        </div>
+        <div class="payment-form">
+          <div class="form-group">
+            <label>الاسم على البطاقة</label>
+            <input type="text" id="cardName" placeholder="محمد أحمد" />
+          </div>
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="payEmail" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label>تفاصيل البطاقة</label>
+            <div class="stripe-element" id="cardElement"></div>
+          </div>
+          <div class="payment-error" id="paymentError"></div>
+          <button class="btn-primary" onclick="processPayment()" id="payBtn" style="width:100%">
+            <span id="payBtnText">دفع الآن</span>
+          </button>
+          <p style="font-size:.72rem;color:var(--text-lo);text-align:center;margin-top:.8rem">
+            🔒 الدفع آمن ومشفر عبر Stripe. لا نقوم بتخزين بيانات البطاقة.
+          </p>
+        </div>
+      </div>
+      <div class="payment-success" id="paymentSuccess">
+        <div class="payment-success-icon">✅</div>
+        <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:.5rem">تم الدفع بنجاح!</h3>
+        <p>سيصلك رابط التحميل على بريدك الإلكتروني خلال لحظات.</p>
+        <p style="margin-top:1rem;font-size:.78rem;color:var(--text-lo)">
+          (هذا وضع تجريبي — لا يتم خصم أي مبلغ حقيقي)
+        </p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -828,6 +1090,35 @@
   let cart = [];
   let currentCat = 'الكل';
   let currentSort = 'featured';
+  let currentReviewProduct = null;
+  let selectedRating = 0;
+
+  // Reviews storage (localStorage)
+  function getReviews() {
+    try { return JSON.parse(localStorage.getItem('digistore_reviews') || '{}'); }
+    catch(e) { return {}; }
+  }
+  function saveReviews(reviews) {
+    localStorage.setItem('digistore_reviews', JSON.stringify(reviews));
+  }
+  function getProductReviews(productId) {
+    const all = getReviews();
+    return all[productId] || [];
+  }
+  function addProductReview(productId, review) {
+    const all = getReviews();
+    if (!all[productId]) all[productId] = [];
+    all[productId].push(review);
+    saveReviews(all);
+  }
+  function getProductAvgRating(productId) {
+    const revs = getProductReviews(productId);
+    if (!revs.length) return null;
+    return (revs.reduce((s,r) => s + r.rating, 0) / revs.length).toFixed(1);
+  }
+  function getProductTotalReviews(productId) {
+    return getProductReviews(productId).length;
+  }
 
   /* ─── RENDER ─── */
   function renderProducts() {
@@ -841,7 +1132,12 @@
 
     const g = document.getElementById('productsGrid');
     if (!list.length) { g.innerHTML = '<p style="color:var(--text-lo);padding:2rem">لا توجد منتجات مطابقة.</p>'; return; }
-    g.innerHTML = list.map(p => `
+    g.innerHTML = list.map(p => {
+      const avgRating = getProductAvgRating(p.id);
+      const totalReviews = getProductTotalReviews(p.id);
+      const displayRating = avgRating ? parseFloat(avgRating) : p.rating;
+      const displayCount = totalReviews || p.reviews;
+      return `
       <div class="prod-card" style="--thumb-bg:${p.bg}">
         <div class="prod-thumb" style="background:${p.bg}">
           ${p.icon}
@@ -851,21 +1147,27 @@
           <div class="prod-category">${p.cat}</div>
           <div class="prod-name">${p.name}</div>
           <div class="prod-desc">${p.desc}</div>
+          <div class="prod-reviews-summary">
+            <span class="stars">${'★'.repeat(Math.floor(displayRating))}${'☆'.repeat(5-Math.floor(displayRating))}</span>
+            <span class="count">(${displayCount})</span>
+          </div>
+          <button class="btn-review" onclick="openReviews(${p.id})">✎ اكتب تقييم</button>
           <div class="prod-meta">
             <div>
               ${p.oldPrice ? `<span class="prod-price-old">$${p.oldPrice}</span>` : ''}
               <span class="prod-price">$${p.price}</span>
             </div>
             <div style="text-align:left">
-              <div class="prod-rating">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-              <div class="prod-reviews">(${p.reviews})</div>
+              <div class="prod-rating">${'★'.repeat(Math.floor(displayRating))}${'☆'.repeat(5-Math.floor(displayRating))}</div>
+              <div class="prod-reviews">(${displayCount})</div>
             </div>
           </div>
         </div>
         <div class="prod-footer">
           <button class="btn-buy" onclick="addToCart(${p.id})">أضف للسلة 🛒</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   function setCategory(cat) {
@@ -927,11 +1229,173 @@
     document.getElementById('cartOverlay').classList.remove('open');
     document.getElementById('cartPanel').classList.remove('open');
   }
-  function checkout() {
-    showToast('🎉 شكراً لك! سيصل رابط التحميل لبريدك قريباً.');
-    cart = [];
-    updateCart();
+
+  /* ─── REVIEWS ─── */
+  function openReviews(productId) {
+    currentReviewProduct = productId;
+    const p = allProducts.find(x => x.id === productId);
+    document.getElementById('reviewsModalTitle').textContent = `التقييمات — ${p.name}`;
+    renderReviewsList(productId);
+    selectedRating = 0;
+    updateStarDisplay();
+    document.getElementById('reviewerName').value = '';
+    document.getElementById('reviewText').value = '';
+    document.getElementById('reviewsModal').classList.add('open');
+  }
+
+  function closeReviewsModal(e) {
+    if (!e || e.target === document.getElementById('reviewsModal')) {
+      document.getElementById('reviewsModal').classList.remove('open');
+    }
+  }
+
+  function renderReviewsList(productId) {
+    const revs = getProductReviews(productId);
+    const list = document.getElementById('reviewsList');
+    if (!revs.length) {
+      list.innerHTML = '<p style="color:var(--text-lo);text-align:center;padding:1rem">لا توجد تقييمات بعد. كن أول من يقيّم!</p>';
+      return;
+    }
+    list.innerHTML = revs.slice().reverse().map(r => `
+      <div class="review-item">
+        <div class="review-header">
+          <span class="review-author">${r.name}</span>
+          <span class="review-date">${r.date}</span>
+        </div>
+        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        <div class="review-text">${r.text}</div>
+      </div>
+    `).join('');
+  }
+
+  // Star rating interaction
+  document.querySelectorAll('#starRatingInput .star').forEach(star => {
+    star.addEventListener('click', function() {
+      selectedRating = parseInt(this.dataset.val);
+      updateStarDisplay();
+    });
+    star.addEventListener('mouseenter', function() {
+      const val = parseInt(this.dataset.val);
+      document.querySelectorAll('#starRatingInput .star').forEach((s, i) => {
+        s.classList.toggle('active', i < val);
+      });
+    });
+  });
+  document.getElementById('starRatingInput').addEventListener('mouseleave', updateStarDisplay);
+
+  function updateStarDisplay() {
+    document.querySelectorAll('#starRatingInput .star').forEach((s, i) => {
+      s.classList.toggle('active', i < selectedRating);
+    });
+  }
+
+  function submitReview() {
+    const name = document.getElementById('reviewerName').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+    if (!selectedRating) { showToast('⭐ اختر التقييم أولاً'); return; }
+    if (!name) { showToast('أدخل اسمك'); return; }
+    if (!text) { showToast('اكتب تقييمك'); return; }
+    const review = {
+      name: name,
+      text: text,
+      rating: selectedRating,
+      date: new Date().toLocaleDateString('ar-SA')
+    };
+    addProductReview(currentReviewProduct, review);
+    renderReviewsList(currentReviewProduct);
+    renderProducts(); // update displayed ratings
+    document.getElementById('reviewerName').value = '';
+    document.getElementById('reviewText').value = '';
+    selectedRating = 0;
+    updateStarDisplay();
+    showToast('✅ تم إرسال التقييم بنجاح!');
+  }
+
+  /* ─── CONTACT ─── */
+  function sendContact() {
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const type = document.getElementById('contactType').value;
+    const message = document.getElementById('contactMessage').value.trim();
+    if (!name || !email || !type || !message) {
+      showToast('يرجى ملء جميع الحقول');
+      return;
+    }
+    // In a real app, this would send to a server
+    showToast('✅ تم إرسال رسالتك! سنتواصل معك قريباً.');
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactType').value = '';
+    document.getElementById('contactMessage').value = '';
+  }
+
+  /* ─── PAYMENT (Stripe) ─── */
+  let stripe = null;
+  let cardElement = null;
+
+  function openPayment() {
+    if (!cart.length) { showToast('السلة فارغة'); return; }
     closeCart();
+    document.getElementById('paymentModal').classList.add('open');
+    document.getElementById('paymentForm').style.display = 'block';
+    document.getElementById('paymentSuccess').style.display = 'none';
+    document.getElementById('paymentError').style.display = 'none';
+
+    // Render payment summary
+    const itemsDiv = document.getElementById('paymentItems');
+    itemsDiv.innerHTML = cart.map(p => `
+      <div class="payment-item">
+        <span>${p.name}</span>
+        <span>$${p.price}</span>
+      </div>
+    `).join('');
+    const total = cart.reduce((s,p) => s + p.price, 0);
+    document.getElementById('paymentTotal').textContent = `$${total}`;
+
+    // Initialize Stripe Elements (test mode)
+    if (!stripe) {
+      stripe = Stripe('pk_test_51H7...'); // Replace with your test key
+      const elements = stripe.elements({
+        appearance: { theme: 'night', variables: { colorPrimary: '#4F8EF7', colorBackground: '#0B0F1A', colorText: '#F0F4FF' }}
+      });
+      cardElement = elements.create('card', { style: { base: { fontFamily: 'Cairo, sans-serif', fontSize: '16px', color: '#F0F4FF', '::placeholder': { color: '#7A8BA6' }}}});
+      cardElement.mount('#cardElement');
+    }
+  }
+
+  function closePaymentModal(e) {
+    if (!e || e.target === document.getElementById('paymentModal')) {
+      document.getElementById('paymentModal').classList.remove('open');
+    }
+  }
+
+  async function processPayment() {
+    const btn = document.getElementById('payBtn');
+    const btnText = document.getElementById('payBtnText');
+    const errorDiv = document.getElementById('paymentError');
+    const email = document.getElementById('payEmail').value.trim();
+    const cardName = document.getElementById('cardName').value.trim();
+
+    if (!cardName) { errorDiv.textContent = 'أدخل الاسم على البطاقة'; errorDiv.style.display = 'block'; return; }
+    if (!email) { errorDiv.textContent = 'أدخل البريد الإلكتروني'; errorDiv.style.display = 'block'; return; }
+
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span> جاري المعالجة...';
+
+    // Simulate payment processing (demo mode)
+    setTimeout(() => {
+      btn.disabled = false;
+      btnText.textContent = 'دفع الآن';
+      document.getElementById('paymentForm').style.display = 'none';
+      document.getElementById('paymentSuccess').style.display = 'block';
+
+      // Clear cart
+      cart = [];
+      updateCart();
+
+      showToast('🎉 تم الدفع بنجاح!');
+    }, 2000);
   }
 
   /* ─── TOAST ─── */
